@@ -22,7 +22,7 @@ public class Chat {
     //para abrigar todos os usuários atualmente logados no chat
     private static final String ZNODE_USUARIOS = "/usuarios";
     //para ler os dados que o usuário vai digitar
-    private Scanner scanner;
+    private Scanner scanner = new Scanner(System.in);
     //menu de opções a ser exibido para o usuário, uma vez que ele tenha logado no chat
     private String instrucoes =
             String.format(
