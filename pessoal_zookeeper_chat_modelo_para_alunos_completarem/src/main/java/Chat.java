@@ -111,23 +111,31 @@ public class Chat {
 
         String opcao = "";
         //exibir instruções
-        System.out.println (instrucoes);
+        exibirInstrucoes();
         //capturar opcao do usuário
         opcao = scanner.nextLine();
         while (!opcao.equals("/exit")){
             //list: exibe o histórico de mensagens e as instruções
             if (opcao.startsWith("/list")){
                 //seu código aqui
+                exibirHistorico();
+                exibirInstrucoes();
             }
             //send
             else if (opcao.startsWith("/send")){
                 //extrai a data atual do sistema (new Date())
+                Date date = new Date();
                 // a representa como um número (new Date().getTime())
+                String data_string = formatDate(date.getTime());
                 //e cria um ZNode persistente
+                String prefixo = String.format("%s/%s", ZNODE_CHAT,  data_string);
                 //o nome do ZNode é o número que representa a data
                 //seu conteúdo pode ser algo como usuario:mensagem
                 String msg = opcao.substring(opcao.indexOf(" ") + 1);
+                String conteudo = usuario + " diz " + msg;
 
+                String pathInteiro = zooKeeper.create(prefixo, conteudo.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
             }
             else{
                 System.out.println("Opção inválida.");
@@ -136,6 +144,7 @@ public class Chat {
         }
         System.out.println("Até mais.");
     }
+
 
     private void criarNosRaizes () throws InterruptedException, KeeperException{
         //criar os dois ZNodes (/chat e /usuarios) usando o método criarNoRaiz
