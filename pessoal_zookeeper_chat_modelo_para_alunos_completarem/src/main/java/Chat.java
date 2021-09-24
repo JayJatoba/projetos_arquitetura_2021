@@ -32,7 +32,7 @@ public class Chat {
                     "/exit: encerra execução"
             );
     //para formatar a data de uma mensagem, quando ela tiver de ser exibida
-    private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy kk:mm:ss");
     //nome escolhido pelo usuário para entrar no chat
     private String usuario;
 
@@ -176,7 +176,7 @@ public class Chat {
                     }
                 },
                 AddWatchMode.PERSISTENT_RECURSIVE);
-        
+
         //registrar um one-time trigger watch no ZNode /chat
         //use getChildren.
         //Use o watch historicoWatcher implementado logo a seguir
