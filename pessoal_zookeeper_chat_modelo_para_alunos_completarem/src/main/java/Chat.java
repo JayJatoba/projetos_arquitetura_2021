@@ -155,7 +155,28 @@ public class Chat {
     private void registrarWatchers() throws InterruptedException, KeeperException{
         //registrar watcher persistente e recursivo no ZNode /usuarios
         //use o método addWatch
-
+        String prefixo = ZNODE_USUARIOS+'/';
+        zooKeeper.addWatch(ZNODE_USUARIOS, new Watcher() {
+                    @Override
+                    public void process(WatchedEvent event) {
+                        String eventPath = event.getPath();
+                        String nome = eventPath.substring(prefixo.length());
+                        switch(event.getType()){
+                            case NodeCreated:
+                                System.out.println(nome + " entrou\n");
+                                exibirInstrucoes();
+                                break;
+                            case NodeDeleted:
+                                if(!usuario.equals(nome)) {
+                                    System.out.println(nome + " saiu\n");
+                                    exibirInstrucoes();
+                                }
+                                break;
+                        }
+                    }
+                },
+                AddWatchMode.PERSISTENT_RECURSIVE);
+        
         //registrar um one-time trigger watch no ZNode /chat
         //use getChildren.
         //Use o watch historicoWatcher implementado logo a seguir
