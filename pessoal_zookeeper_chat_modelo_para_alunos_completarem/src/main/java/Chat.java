@@ -3,6 +3,8 @@ import org.apache.zookeeper.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.Stat;
@@ -46,7 +48,22 @@ public class Chat {
     //deve criar um ZNode efêmero para representar o usuário
     private void capturaUsuario () throws InterruptedException, KeeperException{
         //seu código aqui
-
+        Pattern special = Pattern.compile("/");
+        while(true) {
+            System.out.println("Escolha um nome de usuário para você: \n");
+            usuario= scanner.nextLine();
+            Matcher hasSpecial = special.matcher(usuario);
+            if (usuario.isEmpty() || hasSpecial.find()) {
+                System.out.println("Nome não aceito. Por favor escreva novamente.");
+            } else if (usuarioJaExiste(usuario)) {
+                System.out.println("Nome já está sendo usado. Use outro.");
+            }else{
+                String prefixo = String.format("%s/%s", ZNODE_USUARIOS, usuario);
+                String pathInteiro = zooKeeper.create(prefixo, new byte[]{}, ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.EPHEMERAL);
+                break;
+            }
+        }
         //no final, esse método pode mostrar essa mensagem
         System.out.printf ("Oi, %s. Você entrou. Veja o que já aconteceu até então.\n", usuario);
     }
@@ -55,8 +72,9 @@ public class Chat {
     //você pode usar o método getChildren para isso
     private boolean usuarioJaExiste (String usuario) throws InterruptedException, KeeperException{
         //seu código aqui
+        List<String> listaUsuarios = zooKeeper.getChildren(ZNODE_USUARIOS,false);
         //ao final, devolva uma expressão booleana
-        return false;
+        return listaUsuarios.contains(usuario);
     }
 
     //veja os comentários para implementar esse método
@@ -116,7 +134,8 @@ public class Chat {
 
     private void criarNosRaizes () throws InterruptedException, KeeperException{
         //criar os dois ZNodes (/chat e /usuarios) usando o método criarNoRaiz
-
+        criarNoRaiz(ZNODE_CHAT);
+        criarNoRaiz(ZNODE_USUARIOS);
     }
 
     private void registrarWatchers() throws InterruptedException, KeeperException{
@@ -149,7 +168,7 @@ public class Chat {
 
     private void exibirInstrucoes (){
         //um simples println para exibir as instruções
-
+        System.out.println(instrucoes);
     }
 
 
